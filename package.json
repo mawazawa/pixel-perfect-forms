@@ -1,13 +1,15 @@
 {
-  "name": "fl100-pixel-perfect-forms",
-  "version": "1.0.0",
-  "description": "FL-100 Pixel-Perfect WASM Forms - Production deployment with sub-millimeter accuracy for legal documents",
-  "scripts": {
-    "build": "cp -r app/dist/* . && cp index.html index_backup.html && echo 'Production build complete'",
-    "dev": "cd app && cargo check",
-    "deploy": "vercel --prod"
-  },
-  "keywords": ["wasm", "legal", "forms", "pixel-perfect", "rust"],
-  "author": "FL-100 Development Team",
-  "license": "MIT"
+  "name": "app",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "app_bg.wasm",
+    "app.js",
+    "app.d.ts"
+  ],
+  "main": "app.js",
+  "types": "app.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
 }
