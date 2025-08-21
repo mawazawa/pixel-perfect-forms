@@ -1,19 +1,22 @@
 {
   "version": 2,
-  "name": "fl100-live-deployment",
-  "buildCommand": "cd app && trunk build --release --dist ../dist && cp ../dist/* .",
+  "buildCommand": "echo 'Static files deployment'",
   "outputDirectory": ".",
-  "env": {
-    "RUST_VERSION": "1.70.0"
-  },
-  "build": {
-    "commands": [
-      "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
-      "source $HOME/.cargo/env",
-      "rustup target add wasm32-unknown-unknown",
-      "cargo install trunk wasm-bindgen-cli",
-      "cd app && trunk build --release --dist ../dist",
-      "cp ../dist/* ."
-    ]
-  }
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "*.wasm",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/wasm"
+        }
+      ]
+    }
+  ]
 }
