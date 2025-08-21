@@ -5,7 +5,17 @@
   "scripts": {
     "dev": "cd app && trunk serve --open",
     "build": "cd app && trunk build --release",
-    "clean": "cd app && trunk clean"
+    "clean": "cd app && trunk clean",
+    "test": "playwright test",
+    "test:accuracy": "playwright test tests/accuracy.spec.js",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "lint": "cd app && cargo clippy --target wasm32-unknown-unknown",
+    "format": "cd app && cargo fmt",
+    "audit": "cd app && cargo audit",
+    "performance": "lighthouse http://localhost:8080 --output=json --output-path=./performance-report.json",
+    "analyze": "wasm-pack build --target web --out-dir pkg app && du -sh app/pkg/*"
   },
   "keywords": [
     "wasm",

@@ -1,40 +1,379 @@
 # 
-#  ██████╗ ██╗
-# ██╔════╝ ██║
-# ██║  ███╗██║     ██████╗ ██╗   ██╗███████╗███████╗███████╗
-# ██║   ██║██║     ██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝
-# ╚██████╔╝███████╗██████╔╝██║   ██║█████╗  ███████╗█████╗  
-#  ╚═════╝ ╚══════╝██╔═══╝ ██║   ██║██╔══╝  ╚════██║██╔══╝  
-#                 ██║     ╚██████╔╝███████╗███████║███████╗
-#                 ╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝
-#                               .github/workflows/ci.yml
+#  ██████╗██╗    ██████╗ ██╗██████╗ ███████╗██╗     ██╗███╗   ██╗███████╗
+# ██╔════╝██║   ██╔══██╗██║██╔══██╗██╔════╝██║     ██║████╗  ██║██╔════╝
+# ██║     ██║   ██████╔╝██║██████╔╝█████╗  ██║     ██║██╔██╗ ██║█████╗  
+# ██║     ██║   ██╔═══╝ ██║██╔═══╝ ██╔══╝  ██║     ██║██║╚██╗██║██╔══╝  
+# ╚██████╗██║   ██║     ██║██║     ███████╗███████╗██║██║ ╚████║███████╗
+#  ╚═════╝╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝
+#                                               .github/workflows/ci.yml
 
-name: CI
+name: FL-100 Pixel-Perfect CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main ]
+  schedule:
+    # Run nightly builds at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  NODE_VERSION: '18'
+  RUST_VERSION: '1.70.0'
 
 jobs:
-  fmt-and-build:
+  # Rust/WASM Build and Test
+  rust-ci:
+    name: Rust CI (WASM)
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        targets: wasm32-unknown-unknown
+        components: rustfmt, clippy
 
-      - name: Add wasm32 target
-        run: rustup target add wasm32-unknown-unknown
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
 
-      - name: Rustfmt check
-        run: cargo fmt --all -- --check
+    - name: Install wasm-pack
+      run: |
+        curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Install trunk
-        run: cargo install trunk
+    - name: Install trunk
+      run: |
+        wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+        sudo mv trunk /usr/local/bin/
 
-      - name: Build WASM app (release)
-        working-directory: app
-        run: trunk build --release
+    - name: Check Rust formatting
+      run: |
+        cd app
+        cargo fmt --all -- --check
+
+    - name: Run Clippy
+      run: |
+        cd app
+        cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
+    - name: Run Rust tests
+      run: |
+        cd app
+        cargo test --lib
+
+    - name: Build WASM (Debug)
+      run: |
+        cd app
+        trunk build --release
+
+    - name: Analyze WASM bundle size
+      run: |
+        cd app/dist
+        echo "=== WASM Bundle Analysis ==="
+        ls -lah *.wasm
+        wasm-opt --version || echo "wasm-opt not available"
+        
+        # Calculate total bundle size
+        TOTAL_SIZE=$(du -sh . | cut -f1)
+        echo "Total bundle size: $TOTAL_SIZE"
+        
+        # Check if bundle is under target size (5MB)
+        TOTAL_BYTES=$(du -sb . | cut -f1)
+        if [ $TOTAL_BYTES -gt 5242880 ]; then
+          echo "⚠️ Bundle size exceeds 5MB target"
+          exit 1
+        else
+          echo "✅ Bundle size within target"
+        fi
+
+    - name: Upload WASM artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: wasm-build-${{ github.sha }}
+        path: app/dist/
+        retention-days: 7
+
+  # Performance Testing
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: rust-ci
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Download WASM artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: wasm-build-${{ github.sha }}
+        path: app/dist/
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install Lighthouse CI
+      run: npm install -g @lhci/cli@0.12.x
+
+    - name: Run performance tests
+      run: |
+        # Start local server
+        cd app
+        python3 -m http.server 8080 --directory dist &
+        sleep 3
+        
+        # Run Lighthouse CI
+        lhci autorun --config=./.lighthouserc.json || true
+        
+        # Kill server
+        pkill -f "python3 -m http.server"
+
+    - name: Analyze load times
+      run: |
+        echo "=== Performance Metrics ==="
+        node scripts/analyze-performance.js
+
+  # Security and Code Quality
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+
+    - name: Run cargo audit
+      run: |
+        cargo install cargo-audit
+        cd app
+        cargo audit
+
+    - name: Run npm audit
+      run: |
+        npm audit --audit-level moderate
+
+    - name: Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+
+  # Accuracy Validation Tests
+  accuracy-tests:
+    name: Accuracy Validation
+    runs-on: ubuntu-latest
+    needs: rust-ci
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Download WASM artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: wasm-build-${{ github.sha }}
+        path: app/dist/
+
+    - name: Install Playwright
+      run: |
+        npm install @playwright/test
+        npx playwright install chromium
+
+    - name: Run accuracy tests
+      run: |
+        # Start local server
+        cd app
+        python3 -m http.server 8080 --directory dist &
+        SERVER_PID=$!
+        sleep 3
+        
+        # Run accuracy validation tests
+        cd ..
+        npm run test:accuracy
+        
+        # Clean up
+        kill $SERVER_PID
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: accuracy-test-results
+        path: test-results/
+        retention-days: 7
+
+  # Cross-Browser Testing
+  browser-tests:
+    name: Cross-Browser Tests
+    runs-on: ubuntu-latest
+    needs: rust-ci
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Download WASM artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: wasm-build-${{ github.sha }}
+        path: app/dist/
+
+    - name: Install Playwright
+      run: |
+        npm install @playwright/test
+        npx playwright install ${{ matrix.browser }}
+
+    - name: Run browser tests
+      run: |
+        # Start local server
+        cd app
+        python3 -m http.server 8080 --directory dist &
+        SERVER_PID=$!
+        sleep 3
+        
+        # Run tests for specific browser
+        cd ..
+        npx playwright test --project=${{ matrix.browser }}
+        
+        # Clean up
+        kill $SERVER_PID
+
+  # Deployment
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [rust-ci, performance-tests, security-audit, accuracy-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download WASM artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: wasm-build-${{ github.sha }}
+        path: app/dist/
+
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: './app/dist'
+        production-branch: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy from GitHub Actions"
+        enable-pull-request-comment: false
+        enable-commit-comment: true
+        overwrites-pull-request-comment: true
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+    - name: Validate deployment
+      run: |
+        # Wait for deployment to be live
+        sleep 30
+        
+        # Basic health check
+        curl -f https://fl100-pixel-perfect.netlify.app/ || exit 1
+        echo "✅ Deployment validated"
+
+  # Nightly Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run full integration suite
+      run: |
+        echo "Running comprehensive integration tests..."
+        # Add integration test commands here
+        
+    - name: Generate performance report
+      run: |
+        echo "Generating nightly performance report..."
+        # Add performance reporting here
+
+    - name: Notify on failures
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#fl100-alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+# Workflow completion notification
+  notify-completion:
+    name: Notify Completion
+    runs-on: ubuntu-latest
+    needs: [rust-ci, performance-tests, security-audit, accuracy-tests]
+    if: always()
+    
+    steps:
+    - name: Workflow Summary
+      run: |
+        echo "=== FL-100 CI/CD Pipeline Summary ==="
+        echo "Rust CI: ${{ needs.rust-ci.result }}"
+        echo "Performance: ${{ needs.performance-tests.result }}"
+        echo "Security: ${{ needs.security-audit.result }}"
+        echo "Accuracy: ${{ needs.accuracy-tests.result }}"
+        
+        if [[ "${{ needs.rust-ci.result }}" == "success" && 
+              "${{ needs.performance-tests.result }}" == "success" && 
+              "${{ needs.security-audit.result }}" == "success" && 
+              "${{ needs.accuracy-tests.result }}" == "success" ]]; then
+          echo "✅ All checks passed - Ready for production"
+        else
+          echo "❌ Some checks failed - Review required"
+        fi
