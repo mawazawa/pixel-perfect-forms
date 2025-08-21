@@ -22,6 +22,8 @@ filehash = true
 minify = "on_release"
 # Build mode toggle (CI will use --release)
 release = false
+# Configure wasm-opt to enable bulk memory operations
+wasm-opt = ["-O", "--enable-bulk-memory"]
 
 [watch]
 # Additional watch dirs (none for now)
