@@ -11,6 +11,9 @@ mod coordinates;
 mod calibration;
 mod calibration_wizard;
 mod proofing_ui;
+mod text_input;
+mod checkbox;
+mod signature;
 
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
