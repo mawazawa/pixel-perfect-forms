@@ -12,8 +12,14 @@ set -e
 
 echo "🦀 Building FL-100 Foundation Layer with Rust+WASM..."
 
-# Source Rust environment
-source "$HOME/.cargo/env"
+# Source Rust environment (install if needed)
+if [ ! -f "$HOME/.cargo/env" ]; then
+    echo "🦀 Installing Rust for Vercel environment..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
+else
+    source "$HOME/.cargo/env"
+fi
 
 # Add WASM target if not already added
 rustup target add wasm32-unknown-unknown
