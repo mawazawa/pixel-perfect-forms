@@ -38,8 +38,21 @@ cat > dist/bootstrap.js << 'EOF'
 // Simple WASM loader for FL-100 Foundation Layer
 console.log('🚀 FL-100 Foundation Layer Loading...');
 
+// AI Gateway configuration
+const AI_GATEWAY_CONFIG = {
+  token: process.env.AI_GATEWAY_API_KEY || 'q7eu9rynz8kvIEFlcLhs7GbB',
+  endpoint: 'https://gateway.ai.cloudflare.com',
+  maxRetries: 3,
+  timeout: 10000
+};
+
 async function init() {
   try {
+    // Initialize AI Gateway if available
+    if (AI_GATEWAY_CONFIG.token !== 'q7eu9rynz8kvIEFlcLhs7GbB') {
+      console.log('🤖 AI Gateway configured for enhanced accuracy validation');
+    }
+    
     // For now, just show that the system is ready
     document.body.innerHTML = `
       <div style="
