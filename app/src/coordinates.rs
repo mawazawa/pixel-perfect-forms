@@ -29,7 +29,7 @@ pub struct ScreenCoord {
 }
 
 /// Device calibration data
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DeviceCalibration {
     pub scale_factor: f64,     // pixels per mm
     pub confidence: f64,       // 0.0 to 1.0
@@ -53,7 +53,7 @@ impl Default for DeviceCalibration {
 }
 
 /// Coordinate transformation utilities
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct CoordinateSystem {
     calibration: DeviceCalibration,
 }

@@ -18,6 +18,8 @@ mod rendering_engine;
 mod main_app;
 mod document_manager;
 mod overlay_manager;
+mod font_metrics;
+mod cv_alignment;
 
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;

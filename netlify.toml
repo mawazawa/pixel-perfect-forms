@@ -1,5 +1,5 @@
 [build]
-  command = "./simple-build.sh"
+  command = "bash ./simple-build.sh"
   publish = "app/dist"
   
 [build.environment]
