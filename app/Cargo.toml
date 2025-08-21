@@ -21,4 +21,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 gloo-storage = "0.3"
 gloo-utils = "0.2"
+wee_alloc = "0.4.5"  # Smaller allocator for WASM
+console_error_panic_hook = "0.1.6"  # Better error reporting
 

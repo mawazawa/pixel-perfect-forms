@@ -18,6 +18,11 @@ use calibration::CalibrationManager;
 use calibration_wizard::CalibrationWizard;
 use proofing_ui::ProofingUI;
 
+// Use wee_alloc as the global allocator for smaller WASM size
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+
 pub struct App {
     show_calibration: bool,
     calibration_manager: CalibrationManager,
@@ -93,7 +98,12 @@ impl Component for App {
     }
 }
 
-#[wasm_bindgen(start)]
-pub fn run() {
+pub fn start_app() {
     yew::Renderer::<App>::new().render();
+}
+
+#[wasm_bindgen(start)]  
+pub fn wasm_main() {
+    console_error_panic_hook::set_once();
+    start_app();
 }

@@ -15,8 +15,18 @@ resolver = "2"
 edition = "2021"
 
 [profile.release]
-# Smaller wasm
-opt-level = "s"
+# Aggressive WASM size optimization
+opt-level = "z"  # Optimize for size even more aggressively than "s"
 codegen-units = 1
-lto = true
+lto = "fat"      # Full link-time optimization
+panic = "abort"  # Smaller panic handling
+strip = "symbols"  # Strip debug symbols
+debug = false    # No debug info
+rpath = false    # No runtime path
+
+[profile.dev]
+# Faster dev builds
+opt-level = 0
+debug = true
+split-debuginfo = "unpacked"
 

@@ -13,11 +13,6 @@ use serde::{Deserialize, Serialize};
 pub const US_LETTER_WIDTH_MM: f64 = 215.9;
 pub const US_LETTER_HEIGHT_MM: f64 = 279.4;
 
-/// Points per inch (typography standard)
-pub const POINTS_PER_INCH: f64 = 72.0;
-
-/// Millimeters per inch
-pub const MM_PER_INCH: f64 = 25.4;
 
 /// Physical coordinate in millimeters
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -83,26 +78,6 @@ impl CoordinateSystem {
         px / self.calibration.scale_factor
     }
 
-    /// Convert points to CSS pixels
-    pub fn pt_to_px(&self, pt: f64) -> f64 {
-        self.mm_to_px(self.pt_to_mm(pt))
-    }
-
-    /// Convert CSS pixels to points
-    pub fn px_to_pt(&self, px: f64) -> f64 {
-        self.mm_to_pt(self.px_to_mm(px))
-    }
-
-    /// Convert millimeters to points
-    pub fn mm_to_pt(&self, mm: f64) -> f64 {
-        mm * POINTS_PER_INCH / MM_PER_INCH
-    }
-
-    /// Convert points to millimeters
-    pub fn pt_to_mm(&self, pt: f64) -> f64 {
-        pt * MM_PER_INCH / POINTS_PER_INCH
-    }
-
     /// Convert physical coordinate to screen coordinate
     pub fn physical_to_screen(&self, coord: PhysicalCoord) -> ScreenCoord {
         ScreenCoord {
@@ -111,13 +86,6 @@ impl CoordinateSystem {
         }
     }
 
-    /// Convert screen coordinate to physical coordinate
-    pub fn screen_to_physical(&self, coord: ScreenCoord) -> PhysicalCoord {
-        PhysicalCoord {
-            x: self.px_to_mm(coord.x),
-            y: self.px_to_mm(coord.y),
-        }
-    }
 
     /// Validate coordinate is within US Letter bounds
     pub fn validate_physical_bounds(&self, coord: PhysicalCoord) -> bool {
@@ -139,20 +107,7 @@ impl CoordinateSystem {
         }
     }
 
-    /// Calculate accuracy score (0.0 to 1.0)
-    pub fn calculate_accuracy(&self, expected_mm: f64, measured_px: f64) -> f64 {
-        let converted_mm = self.px_to_mm(measured_px);
-        let error_mm = (expected_mm - converted_mm).abs();
-        
-        // Target <0.1mm accuracy = score 1.0
-        // Error >1.0mm = score 0.0
-        (1.0 - (error_mm / 1.0)).max(0.0)
-    }
 
-    /// Update calibration
-    pub fn update_calibration(&mut self, calibration: DeviceCalibration) {
-        self.calibration = calibration;
-    }
 
 }
 

@@ -7,7 +7,7 @@
 //  ╚══╝╚══╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝      ╚═════╝ ╚═╝
 //                                          app/src/calibration_wizard.rs
 
-use crate::calibration::{CalibrationManager, CalibrationStep, CalibrationState};
+use crate::calibration::{CalibrationManager, CalibrationStep};
 use yew::prelude::*;
 use web_sys::{HtmlInputElement, MouseEvent};
 
@@ -207,7 +207,7 @@ impl CalibrationWizard {
         }
     }
 
-    fn render_instructions(&self, ctx: &Context<Self>) -> Html {
+    fn render_instructions(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class="instructions-step">
                 <div class="step-icon">{"📐"}</div>
@@ -433,7 +433,7 @@ impl CalibrationWizard {
                     }
                 }}
                 
-                { if let Some(on_cancel) = &ctx.props().on_cancel {
+                { if let Some(_on_cancel) = &ctx.props().on_cancel {
                     html! {
                         <button 
                             class="cancel-button"

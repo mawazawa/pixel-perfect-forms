@@ -8,7 +8,7 @@
 //                                                     app/src/proofing_ui.rs
 
 use crate::calibration::CalibrationManager;
-use crate::coordinates::{PhysicalCoord, ScreenCoord, US_LETTER_WIDTH_MM, US_LETTER_HEIGHT_MM};
+use crate::coordinates::{PhysicalCoord, US_LETTER_WIDTH_MM, US_LETTER_HEIGHT_MM};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]

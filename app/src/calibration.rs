@@ -10,9 +10,7 @@
 use crate::coordinates::{DeviceCalibration, CoordinateSystem};
 use gloo_storage::{LocalStorage, Storage};
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
-use web_sys::{window, Window};
-use yew::prelude::*;
+use web_sys::window;
 
 const CALIBRATION_STORAGE_KEY: &str = "fl100_device_calibration";
 const TARGET_RULER_LENGTH_MM: f64 = 100.0; // 10cm ruler for calibration
