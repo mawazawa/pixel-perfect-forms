@@ -1,0 +1,30 @@
+# Build artifacts
+target/
+app/target/
+
+# Documentation
+docs/
+*.md
+
+# Development files
+.vscode/
+.idea/
+.DS_Store
+
+# Config files not needed in production
+rustfmt.toml
+netlify.toml
+windsurf_deployment.yaml
+validate_deployment.sh
+
+# Git
+.git/
+
+# Node modules if any
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
