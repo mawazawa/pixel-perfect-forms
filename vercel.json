@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cp -r app/dist/* . && cp index.html index_backup.html && echo 'Build complete - files copied'",
+  "buildCommand": "npm run build",
   "outputDirectory": ".",
   "devCommand": "cd app && cargo check",
   "env": {
