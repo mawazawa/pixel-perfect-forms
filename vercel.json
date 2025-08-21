@@ -1,37 +1,19 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "name": "fl100-live-deployment",
+  "buildCommand": "cd app && trunk build --release --dist ../dist && cp ../dist/* .",
   "outputDirectory": ".",
-  "devCommand": "cd app && cargo check",
   "env": {
-    "AI_GATEWAY_API_KEY": "q7eu9rynz8kvIEFlcLhs7GbB"
+    "RUST_VERSION": "1.70.0"
   },
   "build": {
-    "env": {
-      "AI_GATEWAY_API_KEY": "q7eu9rynz8kvIEFlcLhs7GbB"
-    }
-  },
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
+    "commands": [
+      "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
+      "source $HOME/.cargo/env",
+      "rustup target add wasm32-unknown-unknown",
+      "cargo install trunk wasm-bindgen-cli",
+      "cd app && trunk build --release --dist ../dist",
+      "cp ../dist/* ."
+    ]
+  }
 }
