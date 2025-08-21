@@ -171,6 +171,11 @@ impl CalibrationManager {
         self.coordinate_system.as_ref()
     }
 
+    /// Get calibration data (if calibrated)
+    pub fn get_calibration(&self) -> Option<&DeviceCalibration> {
+        self.coordinate_system.as_ref().map(|cs| cs.get_calibration())
+    }
+
     /// Check if recalibration is needed
     pub fn needs_recalibration(&self) -> bool {
         match Self::load_calibration() {

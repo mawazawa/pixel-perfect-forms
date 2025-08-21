@@ -68,6 +68,11 @@ impl CoordinateSystem {
         Self { calibration }
     }
 
+    /// Get the calibration data
+    pub fn get_calibration(&self) -> &DeviceCalibration {
+        &self.calibration
+    }
+
     /// Convert millimeters to CSS pixels
     pub fn mm_to_px(&self, mm: f64) -> f64 {
         mm * self.calibration.scale_factor
@@ -149,10 +154,6 @@ impl CoordinateSystem {
         self.calibration = calibration;
     }
 
-    /// Get current calibration
-    pub fn get_calibration(&self) -> &DeviceCalibration {
-        &self.calibration
-    }
 }
 
 #[cfg(test)]

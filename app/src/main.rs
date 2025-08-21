@@ -7,18 +7,6 @@
 // ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝     ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝    ╚══════╝
 //                                                             app/src/main.rs
 
-use yew::prelude::*;
-
-#[function_component(App)]
-fn app() -> Html {
-    html! {
-        <main class="app">
-            <h1>{"FL-100 Pixel‑Perfect WASM Forms"}</h1>
-            <p>{"Bootstrap successful. Yew + Trunk app is running."}</p>
-        </main>
-    }
-}
-
 fn main() {
-    yew::Renderer::<App>::new().render();
+    app::run();
 }
