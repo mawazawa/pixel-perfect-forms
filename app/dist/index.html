@@ -1,0 +1,37 @@
+<!--
+ ██████╗ ██╗   ██╗███╗   ██╗    ██╗███╗   ██╗██████╗ ███████╗██╗  ██╗    ██╗  ██╗████████╗███╗   ███╗██╗     
+██╔═══██╗██║   ██║████╗  ██║    ██║████╗  ██║██╔══██╗██╔════╝██║  ██║    ██║  ██║╚══██╔══╝████╗ ████║██║     
+██║   ██║██║   ██║██╔██╗ ██║    ██║██╔██╗ ██║██████╔╝█████╗  ███████║    ███████║   ██║   ██╔████╔██║██║     
+██║▄▄ ██║██║   ██║██║╚██╗██║    ██║██║╚██╗██║██╔══██╗██╔══╝  ██╔══██║    ██╔══██║   ██║   ██║╚██╔╝██║██║     
+╚██████╔╝╚██████╔╝██║ ╚████║    ██║██║ ╚████║██║  ██║███████╗██║  ██║    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
+ ╚══▀▀═╝  ╚═════╝ ╚═╝  ╚═══╝    ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
+                                                                                         app/index.html
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FL-100 Pixel‑Perfect WASM Forms</title>
+    
+    <!-- Compiled WASM and JS assets -->
+    <script type="module">
+      import init, * as wasm from './app-3b37917367f83beb.js';
+      async function run() {
+        await init('./app-3b37917367f83beb_bg.wasm');
+        window.wasmBindings = wasm;
+        dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+      }
+      run();
+    </script>
+    
+    <!-- CSS assets -->
+    <link rel="stylesheet" href="./styles-62358d8f740eed1b.css" />
+    <link rel="stylesheet" href="./form_fields-b428437981006e99.css" />
+    <link rel="stylesheet" href="./print-355bb69377394f55.css" />
+  </head>
+  <body>
+    <noscript>This app requires JavaScript and WebAssembly.</noscript>
+    <script type="module" src="./bootstrap.js"></script>
+  </body>
+</html>

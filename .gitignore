@@ -4,10 +4,10 @@ target/
 pkg/
 
 # Build outputs
-dist/
 build/
-*.wasm
 *.js.map
+# dist/ - temporarily including for deployment
+# *.wasm - temporarily including for deployment
 
 # Environment variables
 .env

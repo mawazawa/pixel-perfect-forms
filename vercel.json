@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Using static build for deployment verification'",
-  "outputDirectory": "public",
+  "buildCommand": "cp -r app/dist/* . && ls -la",
+  "outputDirectory": ".",
   "devCommand": "cd app && cargo check",
   "env": {
     "AI_GATEWAY_API_KEY": "q7eu9rynz8kvIEFlcLhs7GbB"
