@@ -1,0 +1,20 @@
+{
+  "name": "fl100-pixel-perfect-forms",
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/dist/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app/dist/$1"
+    }
+  ],
+  "outputDirectory": "app/dist",
+  "buildCommand": "cargo install trunk && cd app && trunk build --release",
+  "devCommand": "cd app && trunk serve --port $PORT",
+  "framework": "other"
+}

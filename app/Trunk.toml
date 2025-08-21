@@ -1,0 +1,47 @@
+# 
+#  ████████╗██████╗ ██╗   ██╗███╗   ██╗███╗   ██╗██╗  ██╗    ████████╗██████╗ ██╗   ██╗███╗   ███╗██╗     
+#  ╚══██╔══╝██╔══██╗██║   ██║████╗  ██║████╗  ██║██║ ██╔╝    ╚══██╔══╝██╔══██╗██║   ██║████╗ ████║██║     
+#     ██║   ██████╔╝██║   ██║██╔██╗ ██║██╔██╗ ██║█████╔╝        ██║   ██████╔╝██║   ██║██╔████╔██║██║     
+#     ██║   ██╔══██╗██║   ██║██║╚██╗██║██║╚██╗██║██╔═██╗        ██║   ██╔══██╗██║   ██║██║╚██╔╝██║██║     
+#     ██║   ██║  ██║╚██████╔╝██║ ╚████║██║ ╚████║██║  ██╗       ██║   ██║  ██║╚██████╔╝██║ ╚═╝ ██║███████╗
+#     ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝       ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
+#                                                     app/Trunk.toml
+
+trunk-version = "*"
+
+[build]
+# Entry HTML file for Trunk
+target = "index.html"
+# Build output directory
+dist = "dist"
+# Public URL base (adjust if deploying under a subpath)
+public_url = "/"
+# Include file hashes for cache busting
+filehash = true
+# Minify on release builds
+minify = "on_release"
+# Build mode toggle (CI will use --release)
+release = false
+
+[watch]
+# Additional watch dirs (none for now)
+watch = []
+ignore = []
+
+[serve]
+# Local dev server
+addresses = ["127.0.0.1"]
+port = 8080
+open = false
+no_spa = false
+no_autoreload = false
+no_error_reporting = false
+# Enable COOP/COEP to allow Wasm threads in dev if needed
+headers = { "Cross-Origin-Opener-Policy" = "same-origin", "Cross-Origin-Embedder-Policy" = "require-corp" }
+
+[clean]
+# Clean output directory
+dist = "dist"
+cargo = false
+
+ 

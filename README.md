@@ -1,98 +1,70 @@
-# Pixel-Perfect Forms
+```txt
+ ███████╗██╗         ██████╗ ██╗██╗  ██╗███████╗██╗         ███████╗ ██████╗ ██████╗███╗   ███╗███████╗
+ ██╔════╝██║         ██╔══██╗██║██║ ██╔╝██╔════╝██║         ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔════╝
+ █████╗  ██║         ██████╔╝██║█████╔╝ █████╗  ██║         ███████╗██║   ██║██║     ██╔████╔██║█████╗  
+ ██╔══╝  ██║         ██╔══██╗██║██╔═██╗ ██╔══╝  ██║         ╚════██║██║   ██║██║     ██║╚██╔╝██║██╔══╝  
+ ██║     ███████╗    ██║  ██║██║██║  ██╗███████╗███████╗    ███████║╚██████╔╝╚██████╗██║ ╚═╝ ██║███████╗
+ ╚═╝     ╚══════╝    ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝╚═╝     ╚═╝╚══════╝
+                                             Pixel‑Perfect Forms — README.md
+```
 
-A Rust + WebAssembly application that recreates California Judicial Council forms as pixel-perfect, verifiable clones without the limitations of PDFs.
+# Pixel‑Perfect Forms
+
+Rust + WebAssembly app that recreates California Judicial Council forms as pixel‑perfect, verifiable, screen‑first and print‑accurate clones.
 
 ## Overview
 
-This project creates screen-first, print-accurate recreations of legal forms using:
-- **Rust/WebAssembly Core**: SIMD-accelerated image processing and coordinate management
-- **Modern Web APIs**: CSS Houdini, WebGPU compute shaders, OffscreenCanvas
-- **Computer Vision**: OpenCV.js for automatic alignment and quality verification
-- **Physical Unit System**: Calibrated coordinate system for sub-millimeter accuracy
+Built with Yew + Trunk for the UI and a Rust/WASM core. Uses modern web APIs (Houdini, OffscreenCanvas, Popover, Container Queries) and calibration to achieve sub‑millimeter fidelity.
 
-## Key Features
+## Quickstart
 
-- ✅ **Sub-millimeter Precision**: ±0.25mm positioning accuracy
-- ✅ **Device Calibration**: User-calibrated coordinate system for accurate measurements  
-- ✅ **Computer Vision Alignment**: Automated form alignment using OpenCV.js
-- ✅ **Real-time Collaboration**: Multi-user editing with conflict resolution
-- ✅ **Legal Compliance**: Full California Judicial Council form specifications
-- ✅ **Accessibility**: WCAG 2.1 AAA compliance with screen reader support
-- ✅ **Cross-platform**: Works on desktop and mobile with touch optimization
+Prereqs:
+- Rust stable + rustup
+- wasm32 target: `rustup target add wasm32-unknown-unknown`
+- Trunk: `cargo install trunk`
 
-## Technology Stack (August 2025)
+Run locally:
 
-### Core Technologies
-- **Rust + WebAssembly**: Core processing engine with SIMD optimization
-- **TypeScript + React 18**: Modern web application framework
-- **CSS Houdini Paint API**: Custom rendering with hardware acceleration
-- **WebGPU**: Optional compute shader acceleration for CV operations
-- **OpenCV.js**: Computer vision algorithms compiled to WebAssembly
+```bash
+trunk serve --config ./app/Trunk.toml --open
+# or simply from ./app since index.html is there
+cd app && trunk serve --open
+```
 
-### Modern Web APIs
-- Container Queries for responsive design
-- CSS Anchor Positioning for precise overlays
-- Popover API for accessible modals
-- OffscreenCanvas for background processing
-- Web Workers for parallel computation
+Build:
 
-## Architecture
+```bash
+cd app
+trunk build --release
+```
 
-The application is structured in three layers:
+## Project Structure
 
-### 1. Foundation Layer
-- Physical coordinate system with device calibration
-- WebAssembly runtime with SIMD optimization
-- Performance monitoring and error handling
-- Configuration management and testing infrastructure
-
-### 2. Rendering Layer
-- Multi-layer canvas management system
-- CSS Houdini Paint integration for rulers and grids
-- Form rendering engine with pixel-perfect typography
-- Advanced overlay system with transformation controls
-
-### 3. Interaction Layer
-- Sophisticated form field manipulation
-- Computer vision assisted alignment
-- Real-time collaboration capabilities
-- Comprehensive accessibility features
+- `Cargo.toml` (workspace)
+- `app/`
+  - `Cargo.toml` — Yew app
+  - `index.html` — Trunk entry (links Rust and copies `static/`)
+  - `src/main.rs` — Yew `App`
+  - `static/` — Worklets/Workers
+    - `bootstrap.js` — progressive init
+    - `worklets/paint-grid.js` — Houdini grid painter
+    - `workers/diff-worker.js` — placeholder worker
 
 ## Documentation
 
-Comprehensive documentation is available in the [`docs/context-engineering/`](docs/context-engineering/) directory:
+- Research: `docs/context-engineering/research-findings/RESEARCH.md`
+- Plans: `PLAN.md`
 
-- [Technology Assessment 2025](docs/context-engineering/technology-assessment-2025.md)
-- [Architectural Specifications](docs/context-engineering/architectural-specifications/)
-- [Research Findings](docs/context-engineering/research-findings/)
-- [Technical Specifications](docs/context-engineering/technical-specifications/)
+## Technology Targets (2025)
 
-## Development
-
-This project uses a monorepo structure with the following packages:
-
-- `packages/wasm-core/`: Rust/WebAssembly core engine
-- `packages/web-app/`: React web application
-- `packages/shared-types/`: TypeScript type definitions
-- `packages/testing-utils/`: Shared testing utilities
-
-## Legal Compliance
-
-This project strictly adheres to California Judicial Council form specifications and legal requirements:
-
-- Forms validated against official PDF specifications
-- Compliance with rule 1.44 (computer-generated duplicates)
-- Audit trails for all form modifications
-- Accessibility compliance for government forms
+- Container Queries, Popover, OffscreenCanvas, Wasm SIMD: baseline
+- Anchor Positioning, View Transitions, Houdini Paint: progressive
+- WebGPU, Wasm Threads (COOP+COEP): opt‑in
 
 ## License
 
-[License information to be determined]
-
-## Contributing
-
-[Contributing guidelines to be added]
+TBD
 
 ---
 
-**Built with modern web technologies for the 75 million self-represented litigants navigating the legal system.**
+Built for verifiable, accessible, and accurate legal forms.

@@ -1,0 +1,40 @@
+# 
+#  ██████╗ ██╗
+# ██╔════╝ ██║
+# ██║  ███╗██║     ██████╗ ██╗   ██╗███████╗███████╗███████╗
+# ██║   ██║██║     ██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝
+# ╚██████╔╝███████╗██████╔╝██║   ██║█████╗  ███████╗█████╗  
+#  ╚═════╝ ╚══════╝██╔═══╝ ██║   ██║██╔══╝  ╚════██║██╔══╝  
+#                 ██║     ╚██████╔╝███████╗███████║███████╗
+#                 ╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝
+#                               .github/workflows/ci.yml
+
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  fmt-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Rustfmt check
+        run: cargo fmt --all -- --check
+
+      - name: Install trunk
+        run: cargo install trunk
+
+      - name: Build WASM app (release)
+        working-directory: app
+        run: trunk build --release

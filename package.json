@@ -1,0 +1,20 @@
+{
+  "name": "fl100-pixel-perfect-forms",
+  "version": "0.1.0",
+  "description": "FL-100 Pixel-Perfect WASM Forms - Foundation Layer",
+  "scripts": {
+    "dev": "cd app && trunk serve --open",
+    "build": "cd app && trunk build --release",
+    "clean": "cd app && trunk clean"
+  },
+  "keywords": [
+    "wasm",
+    "rust",
+    "yew",
+    "forms",
+    "calibration",
+    "pixel-perfect"
+  ],
+  "author": "FL-100 Team",
+  "license": "MIT"
+}
