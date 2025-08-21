@@ -1,0 +1,11 @@
+[build]
+  command = "./simple-build.sh"
+  publish = "app/dist"
+  
+[build.environment]
+  RUST_VERSION = "1.70.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

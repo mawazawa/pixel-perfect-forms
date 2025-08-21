@@ -14,12 +14,16 @@ mod proofing_ui;
 mod text_input;
 mod checkbox;
 mod signature;
+mod rendering_engine;
+mod main_app;
+mod document_manager;
+mod overlay_manager;
 
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 use calibration::CalibrationManager;
 use calibration_wizard::CalibrationWizard;
-use proofing_ui::ProofingUI;
+use main_app::MainApp;
 
 // Use wee_alloc as the global allocator for smaller WASM size
 #[global_allocator]
@@ -94,7 +98,7 @@ impl Component for App {
                         </div>
                     </header>
                     
-                    <ProofingUI calibration_manager={self.calibration_manager.clone()} />
+                    <MainApp calibration_manager={self.calibration_manager.clone()} />
                 </main>
             }
         }

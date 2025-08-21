@@ -1,5 +1,5 @@
 {
-  "name": "fl100-pixel-perfect-forms",
+  "name": "pp",
   "version": 2,
   "buildCommand": "./simple-build.sh",
   "outputDirectory": "app/dist",
